@@ -21,7 +21,7 @@ import seaborn as sns
 st.set_page_config(page_title="Dashboard Penjualan", layout="wide")
 
 st.title("📊 Dashboard Analisis Penjualan")
-st.markdown("Dashboard interaktif sesuai Kriteria 4 (Filtering & Dynamic Visualization)")
+st.markdown("Dashboard Interaktif Tren Penjualan dengan Filtering & Dynamic Visualization")
 
 # ======================
 # LOAD DATA
@@ -122,5 +122,3 @@ ax2.invert_yaxis()
 ax2.set_title(f"Top {top_n} Produk")
 
 st.pyplot(fig2)
-
-st.dataframe(top_products)
