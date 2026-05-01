@@ -10,117 +10,117 @@ Original file is located at
 # Commented out IPython magic to ensure Python compatibility.
 # %%writefile app.py
 # 
-# import streamlit as st
-# import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# 
-# # ======================
-# # CONFIG
-# # ======================
-# st.set_page_config(page_title="Dashboard Penjualan", layout="wide")
-# 
-# st.title("📊 Dashboard Analisis Penjualan")
-# st.markdown("Dashboard interaktif sesuai Kriteria 4 (Filtering & Dynamic Visualization)")
-# 
-# # ======================
-# # LOAD DATA
-# # ======================
-# @st.cache_data
-# def load_data():
-#     df = pd.read_csv("df_analysis.csv")
-#     df['order_purchase_timestamp'] = pd.to_datetime(
-#         df['order_purchase_timestamp'], errors='coerce'
-#     )
-#     return df
-# 
-# df = load_data()
-# 
-# # ======================
-# # SIDEBAR FILTER (INTERAKTIF WAJIB)
-# # ======================
-# st.sidebar.header("🔍 Filter Data")
-# 
-# # Date range filter
-# min_date = df['order_purchase_timestamp'].min()
-# max_date = df['order_purchase_timestamp'].max()
-# 
-# start_date, end_date = st.sidebar.date_input(
-#     "Pilih Rentang Tanggal",
-#     [min_date, max_date]
-# )
-# 
-# start_date = pd.to_datetime(start_date)
-# end_date = pd.to_datetime(end_date)
-# 
-# # Top N filter
-# top_n = st.sidebar.slider("Top N Produk", 5, 20, 10)
-# 
-# # ======================
-# # APPLY FILTER
-# # ======================
-# df_filtered = df[
-#     (df['order_purchase_timestamp'] >= start_date) &
-#     (df['order_purchase_timestamp'] <= end_date)
-# ]
-# 
-# # VALIDASI
-# if df_filtered.empty:
-#     st.error("❌ Data kosong setelah filter. Silakan ubah rentang tanggal.")
-#     st.stop()
-# 
-# # ======================
-# # KPI
-# # ======================
-# st.subheader("📌 KPI")
-# 
-# col1, col2 = st.columns(2)
-# 
-# col1.metric("Total Revenue", f"{df_filtered['revenue'].sum():,.0f}")
-# col2.metric("Total Orders", df_filtered['order_id'].nunique())
-# 
-# # ======================
-# # PERTANYAAN 1
-# # ======================
-# st.subheader("📈 Tren Revenue Bulanan")
-# 
-# df_filtered['year_month'] = df_filtered['order_purchase_timestamp'].dt.to_period('M')
-# 
-# monthly_sales = df_filtered.groupby('year_month').agg({
-#     'order_id': 'nunique',
-#     'revenue': 'sum'
-# }).reset_index()
-# 
-# monthly_sales['MoM'] = monthly_sales['revenue'].pct_change() * 100
-# 
-# if monthly_sales['MoM'].notna().sum() > 0:
-#     drop_month = monthly_sales.loc[monthly_sales['MoM'].idxmin()]
-#     st.info(f"Penurunan terbesar terjadi pada: **{drop_month['year_month']}**")
-# 
-# fig1, ax1 = plt.subplots()
-# ax1.plot(monthly_sales['year_month'].astype(str), monthly_sales['revenue'], marker='o')
-# ax1.set_title("Revenue Bulanan")
-# plt.xticks(rotation=45)
-# 
-# st.pyplot(fig1)
-# 
-# # ======================
-# # PERTANYAAN 2
-# # ======================
-# st.subheader("🏆 Top Produk")
-# 
-# product_sales = df_filtered.groupby('product_id')['revenue'].sum().sort_values(ascending=False)
-# 
-# top_products = product_sales.head(top_n).reset_index()
-# 
-# total_rev = product_sales.sum()
-# top_products['contribution_%'] = (top_products['revenue'] / total_rev) * 100
-# 
-# fig2, ax2 = plt.subplots()
-# ax2.barh(top_products['product_id'].astype(str), top_products['revenue'])
-# ax2.invert_yaxis()
-# ax2.set_title(f"Top {top_n} Produk")
-# 
-# st.pyplot(fig2)
-# 
-# st.dataframe(top_products)
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ======================
+# CONFIG
+# ======================
+st.set_page_config(page_title="Dashboard Penjualan", layout="wide")
+
+st.title("📊 Dashboard Analisis Penjualan")
+st.markdown("Dashboard interaktif sesuai Kriteria 4 (Filtering & Dynamic Visualization)")
+
+# ======================
+# LOAD DATA
+# ======================
+@st.cache_data
+def load_data():
+    df = pd.read_csv("df_analysis.csv")
+    df['order_purchase_timestamp'] = pd.to_datetime(
+        df['order_purchase_timestamp'], errors='coerce'
+    )
+    return df
+
+df = load_data()
+
+# ======================
+# SIDEBAR FILTER (INTERAKTIF WAJIB)
+# ======================
+st.sidebar.header("🔍 Filter Data")
+
+# Date range filter
+min_date = df['order_purchase_timestamp'].min()
+max_date = df['order_purchase_timestamp'].max()
+
+start_date, end_date = st.sidebar.date_input(
+    "Pilih Rentang Tanggal",
+    [min_date, max_date]
+)
+
+start_date = pd.to_datetime(start_date)
+end_date = pd.to_datetime(end_date)
+
+# Top N filter
+top_n = st.sidebar.slider("Top N Produk", 5, 20, 10)
+
+# ======================
+# APPLY FILTER
+# ======================
+df_filtered = df[
+    (df['order_purchase_timestamp'] >= start_date) &
+    (df['order_purchase_timestamp'] <= end_date)
+]
+
+# VALIDASI
+if df_filtered.empty:
+    st.error("❌ Data kosong setelah filter. Silakan ubah rentang tanggal.")
+    st.stop()
+
+# ======================
+# KPI
+# ======================
+st.subheader("📌 KPI")
+
+col1, col2 = st.columns(2)
+
+col1.metric("Total Revenue", f"{df_filtered['revenue'].sum():,.0f}")
+col2.metric("Total Orders", df_filtered['order_id'].nunique())
+
+# ======================
+# PERTANYAAN 1
+# ======================
+st.subheader("📈 Tren Revenue Bulanan")
+
+df_filtered['year_month'] = df_filtered['order_purchase_timestamp'].dt.to_period('M')
+
+monthly_sales = df_filtered.groupby('year_month').agg({
+    'order_id': 'nunique',
+    'revenue': 'sum'
+}).reset_index()
+
+monthly_sales['MoM'] = monthly_sales['revenue'].pct_change() * 100
+
+if monthly_sales['MoM'].notna().sum() > 0:
+    drop_month = monthly_sales.loc[monthly_sales['MoM'].idxmin()]
+    st.info(f"Penurunan terbesar terjadi pada: **{drop_month['year_month']}**")
+
+fig1, ax1 = plt.subplots()
+ax1.plot(monthly_sales['year_month'].astype(str), monthly_sales['revenue'], marker='o')
+ax1.set_title("Revenue Bulanan")
+plt.xticks(rotation=45)
+
+st.pyplot(fig1)
+
+# ======================
+# PERTANYAAN 2
+# ======================
+st.subheader("🏆 Top Produk")
+
+product_sales = df_filtered.groupby('product_id')['revenue'].sum().sort_values(ascending=False)
+
+top_products = product_sales.head(top_n).reset_index()
+
+total_rev = product_sales.sum()
+top_products['contribution_%'] = (top_products['revenue'] / total_rev) * 100
+
+fig2, ax2 = plt.subplots()
+ax2.barh(top_products['product_id'].astype(str), top_products['revenue'])
+ax2.invert_yaxis()
+ax2.set_title(f"Top {top_n} Produk")
+
+st.pyplot(fig2)
+
+st.dataframe(top_products)
